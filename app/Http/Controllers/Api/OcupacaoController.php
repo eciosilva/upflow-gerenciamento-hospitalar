@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LeitoSimpleResource;
+use App\Http\Resources\OcupacaoResource;
+use App\Http\Resources\PacienteResource;
 use App\Models\Leito;
 use App\Models\Ocupacao;
 use App\Models\Paciente;
@@ -65,18 +68,7 @@ class OcupacaoController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'id' => $ocupacao->id,
-                    'paciente' => [
-                        'id' => $ocupacao->paciente->id,
-                        'nome' => $ocupacao->paciente->nome,
-                        'cpf' => $ocupacao->paciente->cpf_formatado,
-                    ],
-                    'leito' => [
-                        'id' => $ocupacao->leito->id,
-                    ],
-                    'created_at' => $ocupacao->created_at,
-                ],
+                'data' => new OcupacaoResource($ocupacao),
                 'message' => 'Ocupação criada com sucesso'
             ], 201);
 
@@ -163,17 +155,9 @@ class OcupacaoController extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $novaOcupacao->id,
-                    'paciente' => [
-                        'id' => $novaOcupacao->paciente->id,
-                        'nome' => $novaOcupacao->paciente->nome,
-                        'cpf' => $novaOcupacao->paciente->cpf_formatado,
-                    ],
-                    'leito_anterior' => [
-                        'id' => $leitoOrigemId,
-                    ],
-                    'leito_atual' => [
-                        'id' => $novaOcupacao->leito->id,
-                    ],
+                    'paciente' => new PacienteResource($novaOcupacao->paciente),
+                    'leito_anterior' => new LeitoSimpleResource((object) ['id' => $leitoOrigemId]),
+                    'leito_atual' => new LeitoSimpleResource($novaOcupacao->leito),
                     'created_at' => $novaOcupacao->created_at,
                 ],
                 'message' => 'Transferência realizada com sucesso'
@@ -268,15 +252,11 @@ class OcupacaoController extends Controller
             }
 
             if ($ocupacao) {
+                $ocupacao->load(['paciente', 'leito']);
+                
                 $ocupacaoData = [
-                    'paciente' => [
-                        'id' => $ocupacao->paciente->id,
-                        'nome' => $ocupacao->paciente->nome,
-                        'cpf' => $ocupacao->paciente->cpf_formatado,
-                    ],
-                    'leito' => [
-                        'id' => $ocupacao->leito->id,
-                    ]
+                    'paciente' => new PacienteResource($ocupacao->paciente),
+                    'leito' => new LeitoSimpleResource($ocupacao->leito),
                 ];
 
                 $ocupacao->delete();
