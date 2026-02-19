@@ -43,8 +43,8 @@ API REST para gerenciamento de ocupação de leitos hospitalares por pacientes, 
 ### 1. Clone o repositório
 
 ```bash
-git clone <url-do-repositorio>
-cd UpFlow
+git clone git@github.com:eciosilva/upflow-gerenciamento-hospitalar.git
+cd upflow-gerenciamento-hospitalar
 ```
 
 ### 2. Configure as variáveis de ambiente
@@ -59,6 +59,8 @@ DB_DATABASE=upflow
 DB_USERNAME=upflow
 DB_PASSWORD=upflow
 ```
+
+**Importante:** Verifique se as portas mapeadas no arquivo docker-compose.yaml não conflitam com as que já se encontram em uso.
 
 ### 3. Execute o projeto
 
@@ -163,7 +165,7 @@ A coleção inclui:
 
 ### **PostgreSQL vs MySQL**
 
-**Escolhi PostgreSQL pelos seguintes motivos técnicos:**
+Escolhi PostgreSQL pelos seguintes motivos técnicos:
 
 #### **1. Índices Condicionais (Partial Indexes)**
 
