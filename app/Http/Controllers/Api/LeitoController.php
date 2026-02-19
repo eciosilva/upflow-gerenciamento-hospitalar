@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LeitoResource;
 use App\Models\Leito;
 use Illuminate\Http\JsonResponse;
 
@@ -14,25 +15,11 @@ class LeitoController extends Controller
      */
     public function index(): JsonResponse
     {
-        $leitos = Leito::with(['ocupacaoAtiva.paciente'])
-                       ->get()
-                       ->map(function ($leito) {
-                           return [
-                               'id' => $leito->id,
-                               'esta_ocupado' => $leito->esta_ocupado,
-                               'paciente' => $leito->paciente_atual ? [
-                                   'id' => $leito->paciente_atual->id,
-                                   'nome' => $leito->paciente_atual->nome,
-                                   'cpf' => $leito->paciente_atual->cpf_formatado,
-                               ] : null,
-                               'created_at' => $leito->created_at,
-                               'updated_at' => $leito->updated_at,
-                           ];
-                       });
+        $leitos = Leito::with(['ocupacaoAtiva.paciente'])->get();
 
         return response()->json([
             'success' => true,
-            'data' => $leitos,
+            'data' => LeitoResource::collection($leitos),
             'message' => 'Leitos listados com sucesso'
         ]);
     }
@@ -52,21 +39,9 @@ class LeitoController extends Controller
             ], 404);
         }
 
-        $data = [
-            'id' => $leito->id,
-            'esta_ocupado' => $leito->esta_ocupado,
-            'paciente' => $leito->paciente_atual ? [
-                'id' => $leito->paciente_atual->id,
-                'nome' => $leito->paciente_atual->nome,
-                'cpf' => $leito->paciente_atual->cpf_formatado,
-            ] : null,
-            'created_at' => $leito->created_at,
-            'updated_at' => $leito->updated_at,
-        ];
-
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => new LeitoResource($leito),
             'message' => 'Leito recuperado com sucesso'
         ]);
     }

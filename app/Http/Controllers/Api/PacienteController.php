@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuscarPacientePorCpfRequest;
+use App\Http\Resources\PacienteCompletoResource;
 use App\Models\Paciente;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,25 +17,11 @@ class PacienteController extends Controller
      */
     public function index(): JsonResponse
     {
-        $pacientes = Paciente::with(['ocupacaoAtiva.leito'])
-                             ->get()
-                             ->map(function ($paciente) {
-                                 return [
-                                     'id' => $paciente->id,
-                                     'nome' => $paciente->nome,
-                                     'cpf' => $paciente->cpf_formatado,
-                                     'esta_internado' => $paciente->esta_internado,
-                                     'leito' => $paciente->leito_atual ? [
-                                         'id' => $paciente->leito_atual->id,
-                                     ] : null,
-                                     'created_at' => $paciente->created_at,
-                                     'updated_at' => $paciente->updated_at,
-                                 ];
-                             });
+        $pacientes = Paciente::with(['ocupacaoAtiva.leito'])->get();
 
         return response()->json([
             'success' => true,
-            'data' => $pacientes,
+            'data' => PacienteCompletoResource::collection($pacientes),
             'message' => 'Pacientes listados com sucesso'
         ]);
     }
@@ -54,21 +41,9 @@ class PacienteController extends Controller
             ], 404);
         }
 
-        $data = [
-            'id' => $paciente->id,
-            'nome' => $paciente->nome,
-            'cpf' => $paciente->cpf_formatado,
-            'esta_internado' => $paciente->esta_internado,
-            'leito' => $paciente->leito_atual ? [
-                'id' => $paciente->leito_atual->id,
-            ] : null,
-            'created_at' => $paciente->created_at,
-            'updated_at' => $paciente->updated_at,
-        ];
-
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => new PacienteCompletoResource($paciente),
             'message' => 'Paciente recuperado com sucesso'
         ]);
     }
@@ -93,21 +68,9 @@ class PacienteController extends Controller
             ], 404);
         }
 
-        $data = [
-            'id' => $paciente->id,
-            'nome' => $paciente->nome,
-            'cpf' => $paciente->cpf_formatado,
-            'esta_internado' => $paciente->esta_internado,
-            'leito' => $paciente->leito_atual ? [
-                'id' => $paciente->leito_atual->id,
-            ] : null,
-            'created_at' => $paciente->created_at,
-            'updated_at' => $paciente->updated_at,
-        ];
-
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => new PacienteCompletoResource($paciente),
             'message' => 'Paciente encontrado com sucesso'
         ]);
     }
