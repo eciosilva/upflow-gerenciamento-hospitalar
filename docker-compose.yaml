@@ -18,7 +18,8 @@ services:
     volumes:
       - ./:/var/www
     command:
-      sh -c "composer install --ignore-platform-reqs \
+      sh -c "[ ! -f .env ] && cp .env.example .env || echo '.env já existe' \
+        && composer install --ignore-platform-reqs \
         && php artisan key:generate \
         && npm install \
         && npm run build \
