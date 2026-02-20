@@ -45,6 +45,7 @@ API REST para gerenciamento de ocupação de leitos hospitalares por pacientes, 
 ```bash
 git clone git@github.com:eciosilva/upflow-gerenciamento-hospitalar.git
 cd upflow-gerenciamento-hospitalar
+cp .env.example .env
 ```
 
 ### 2. Configure as variáveis de ambiente
